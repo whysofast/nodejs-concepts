@@ -34,18 +34,20 @@ app.post("/repositories", (request, response) => {
 app.put("/repositories/:id", (request, response) => {
   const { body } = request;
   const { id } = request.params;
-  const foundRepo = repositories.find(repo => repo.id === id);
-  
-  if(!foundRepo){
+  const foundRepoIndex = repositories.findIndex(repo => repo.id === id);
+
+  if(foundRepoIndex < 0){
     return response.status(400).send();
   }
-  console.log(body);
-  foundRepo.id = id
-  foundRepo.url = body.url
-  foundRepo.title = body.title
-  foundRepo.techs = body.techs
 
-  return response.status(200).send(foundRepo);
+  repositories[foundRepoIndex] = {
+    ...repositories[foundRepoIndex],
+    url : body.url,
+    title : body.title,
+    techs: body.techs
+  }
+
+  return response.status(200).send(repositories[foundRepoIndex]);
 });
 
 app.delete("/repositories/:id", (request, response) => {
@@ -64,17 +66,18 @@ app.delete("/repositories/:id", (request, response) => {
 
 app.post("/repositories/:id/like", (request, response) => {
   const { id } = request.params;
-  
-  const foundRepo = repositories.find(repo=>repo.id === id);
+  const foundRepoIndex = repositories.findIndex(repo => repo.id === id);
 
-  if(!foundRepo){
+  if(foundRepoIndex < 0){
     return response.status(400).send();
   }
 
-  foundRepo.likes += 1;
+  repositories[foundRepoIndex] = {
+    ...repositories[foundRepoIndex],
+    likes : repositories[foundRepoIndex].likes + 1
+  }
 
-  return response.json({likes: foundRepo.likes});
-  // TODO
+  return response.json({likes: repositories[foundRepoIndex].likes});
 });
 
 module.exports = app;
