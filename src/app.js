@@ -32,11 +32,34 @@ app.post("/repositories", (request, response) => {
 });
 
 app.put("/repositories/:id", (request, response) => {
-  // TODO
+  const { body } = request;
+  const { id } = request.params;
+  const foundRepo = repositories.find(repo => repo.id === id);
+  
+  if(!foundRepo){
+    return response.status(400).send();
+  }
+  console.log(body);
+  foundRepo.id = id
+  foundRepo.url = body.url
+  foundRepo.title = body.title
+  foundRepo.techs = body.techs
+
+  return response.status(200).send(foundRepo);
 });
 
 app.delete("/repositories/:id", (request, response) => {
-  // TODO
+  const { id } = request.params;
+
+  const foundRepoIndex = repositories.findIndex(repo => repo.id === id);
+  
+  if(foundRepoIndex < 0){
+    return response.status(400).send();
+  }
+
+  repositories.splice(foundRepoIndex,1);
+  
+  return response.status(204).send();
 });
 
 app.post("/repositories/:id/like", (request, response) => {
